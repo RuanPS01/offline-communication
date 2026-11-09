@@ -9,7 +9,8 @@
     "midia",
     "canais/*",
     "cliente-web",
-    "site"
+    "site",
+    "servidor-udid"
   ],
   "scripts": {
     "test": "vitest run",

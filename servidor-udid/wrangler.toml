@@ -1,0 +1,14 @@
+# Endpoint de cadastro de iPhones (UDID) para a distribuição ad hoc.
+# Publicar: cd servidor-udid && npx wrangler@4 deploy
+# Segredos (npx wrangler@4 secret put NOME):
+#   ASC_ID_CHAVE, ASC_ID_EMISSOR, ASC_CHAVE_P8   chave da App Store Connect API
+#   GITHUB_TOKEN                                 token com permissão de disparar workflows no repositório
+#   CODIGO_CONVITE (opcional)                    exige ?codigo=... para cadastrar (protege o limite de 100 aparelhos)
+name = "comunicacao-offline-udid"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+
+[vars]
+GITHUB_REPO = "RuanPS01/offline-communication"
+URL_SITE = "https://ruanps01.github.io/offline-communication/"
+IDENTIFICADOR_PERFIL = "io.github.ruanps01.comunicacaooffline.cadastro"
