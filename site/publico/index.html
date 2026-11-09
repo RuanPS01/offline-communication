@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0e1a1b" />
+    <meta name="description" content="Converse com quem está por perto sem internet: som, QR, rede local, Bluetooth e mais. Use no navegador ou instale o app." />
+    <link rel="icon" href="app/icones/icone.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="app/icones/apple-touch-icon.png" />
+    <link rel="stylesheet" href="estilo.css" />
+    <title>Comunicação Offline</title>
+  </head>
+  <body>
+    <header class="topo">
+      <img src="app/icones/icone.svg" alt="" width="64" height="64" />
+      <div>
+        <h1>Comunicação Offline</h1>
+        <p>Converse com quem está por perto quando não há internet nem sinal de celular.</p>
+      </div>
+    </header>
+
+    <main>
+      <section aria-labelledby="titulo-escolha">
+        <h2 id="titulo-escolha">Como você quer usar?</h2>
+        <p class="suave" id="deteccao">Escolha o caminho conforme o seu aparelho.</p>
+
+        <div class="opcoes">
+          <article class="opcao" id="opcao-web" data-para="todos">
+            <h3>Usar agora no navegador</h3>
+            <p>Sem instalar nada. Funciona em qualquer celular: conversa por <strong>som</strong>, por <strong>QR</strong> e pela <strong>rede local</strong>.</p>
+            <a class="botao primario" href="app/">Abrir o app web</a>
+          </article>
+
+          <article class="opcao" id="opcao-pwa" data-para="todos">
+            <h3>Instalar como app (PWA)</h3>
+            <p>Fica na tela inicial e abre mesmo sem internet depois da primeira visita.</p>
+            <ul class="instrucoes" data-sistema="ios">
+              <li>No Safari, toque em <strong>Compartilhar</strong>.</li>
+              <li>Escolha <strong>Adicionar à Tela de Início</strong>.</li>
+            </ul>
+            <ul class="instrucoes" data-sistema="android">
+              <li>No Chrome, abra o app web e toque em <strong>Instalar app</strong> (ou no menu, <strong>Adicionar à tela inicial</strong>).</li>
+            </ul>
+            <ul class="instrucoes" data-sistema="outro">
+              <li>No Chrome ou Edge do computador, use o ícone de instalar na barra de endereço.</li>
+            </ul>
+            <a class="botao" href="app/">Abrir para instalar</a>
+          </article>
+
+          <article class="opcao" id="opcao-android" data-para="android">
+            <h3>App Android (APK)</h3>
+            <p>Habilita tudo: malha Bluetooth, Wi-Fi direto, voz ao vivo, servidor local com hotspot, Morse com a lanterna, NFC e rádio LoRa.</p>
+            <a class="botao primario" id="link-apk" href="downloads/comunicacao-offline.apk" download>Baixar APK</a>
+            <p class="pequeno suave" id="sem-apk" hidden>O primeiro APK ainda não foi publicado. Use o app web enquanto isso.</p>
+            <p class="pequeno suave">Permita a instalação de fontes desconhecidas quando o Android pedir. Atualizações instalam por cima.</p>
+          </article>
+
+          <article class="opcao" id="opcao-ios" data-para="ios">
+            <h3>App iPhone (ad hoc)</h3>
+            <p>Malha Bluetooth, Multipeer entre iPhones, voz e servidor local. Só para aparelhos cadastrados (limite da Apple de 100 por ano).</p>
+            <ol class="instrucoes-ios">
+              <li><a class="botao" id="link-cadastro" href="#">1. Cadastrar este iPhone</a></li>
+              <li><a class="botao primario" id="link-ipa" href="#">2. Instalar o app</a></li>
+            </ol>
+            <p class="pequeno suave">O cadastro instala um perfil que só informa o identificador do aparelho. Depois dele, um novo build é gerado; volte em alguns minutos para instalar. Quem não for cadastrado usa o app web.</p>
+          </article>
+        </div>
+      </section>
+
+      <section aria-labelledby="titulo-tabela">
+        <h2 id="titulo-tabela">O que cada opção habilita</h2>
+        <div class="tabela-rolagem">
+          <table>
+            <thead>
+              <tr><th scope="col">Recurso</th><th scope="col">Navegador / PWA</th><th scope="col">Android</th><th scope="col">iPhone</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Texto por som (ggwave)</th><td>Sim</td><td>Sim</td><td>Sim</td></tr>
+              <tr><th scope="row">QR entre tela e câmera</th><td>Sim</td><td>Sim</td><td>Sim</td></tr>
+              <tr><th scope="row">Rede local (abrir a página de outro celular)</th><td>Cliente</td><td>Servidor e cliente</td><td>Servidor e cliente</td></tr>
+              <tr><th scope="row">Malha Bluetooth</th><td>Não</td><td>Sim</td><td>Sim (com o app aberto)</td></tr>
+              <tr><th scope="row">Wi-Fi direto</th><td>Não</td><td>Nearby</td><td>Multipeer (entre iPhones)</td></tr>
+              <tr><th scope="row">Voz ao vivo (apertar para falar)</th><td>Pela rede local</td><td>Sim</td><td>Sim</td></tr>
+              <tr><th scope="row">Morse por luz</th><td>Recebe; pisca a tela (lanterna só no Android)</td><td>Sim</td><td>Sim</td></tr>
+              <tr><th scope="row">NFC</th><td>Adesivos (só Android)</td><td>Encostar os celulares</td><td>Ler um Android</td></tr>
+              <tr><th scope="row">Rádio LoRa externo</th><td>Chrome com Bluetooth</td><td>Sim</td><td>Sim</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="titulo-rede">
+        <h2 id="titulo-rede">Montar uma rede local sem internet</h2>
+        <p>Um aparelho serve, os outros abrem a página dele. Funciona até com quem só tem o navegador.</p>
+        <div class="opcoes">
+          <article class="opcao">
+            <h3>Virar servidor</h3>
+            <ol>
+              <li><strong>Android com o app:</strong> em Canais, Rede local, toque em <strong>Virar servidor</strong>. O app cria o hotspot e mostra o endereço e um QR.</li>
+              <li><strong>iPhone com o app:</strong> ligue o <strong>Compartilhamento de Internet</strong> nos Ajustes e depois toque em <strong>Virar servidor</strong>.</li>
+              <li><strong>Computador:</strong> com Node.js, baixe o código-fonte e rode <code>npm install</code>, <code>npm run build</code> e <code>npm run servidor-local</code>. O endereço aparece no terminal.</li>
+            </ol>
+          </article>
+          <article class="opcao">
+            <h3>Entrar numa rede próxima</h3>
+            <p>Conecte-se ao Wi-Fi ou hotspot de quem serve e abra o endereço dele:</p>
+            <form id="entrar-rede" class="linha">
+              <label class="oculto" for="endereco">Endereço do servidor</label>
+              <input id="endereco" value="192.168.43.1:8080" inputmode="url" autocomplete="off" />
+              <button class="botao primario" type="submit">Abrir</button>
+            </form>
+            <p class="pequeno suave">Endereços comuns: <button class="endereco" type="button">192.168.43.1:8080</button> (hotspot Android), <button class="endereco" type="button">172.20.10.1:8080</button> (iPhone), <button class="endereco" type="button">192.168.49.1:8080</button> (Wi-Fi Direct). Com o app, a lista aparece sozinha.</p>
+          </article>
+        </div>
+      </section>
+
+      <section aria-labelledby="titulo-compartilhar" class="compartilhar">
+        <div>
+          <h2 id="titulo-compartilhar">Passe adiante</h2>
+          <p>Enquanto houver internet, mostre este QR para quem estiver por perto abrir a página e já deixar o app guardado no aparelho.</p>
+          <p class="pequeno suave" id="versao"></p>
+        </div>
+        <div class="qr" id="qr-pagina"><!--QR_PAGINA--></div>
+      </section>
+    </main>
+
+    <footer>
+      <p class="pequeno suave">Sem cadastro e sem servidor central. Mensagens privadas são cifradas de ponta a ponta. <a href="https://github.com/RuanPS01/offline-communication">Código-fonte</a></p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="hub.js"></script>
+  </body>
+</html>

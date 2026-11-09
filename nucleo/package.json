@@ -1,0 +1,19 @@
+{
+  "name": "@plataforma/nucleo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Núcleo compartilhado: protocolo, malha, presença, cripto, fila e roteamento entre canais.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@noble/ciphers": "^2.4.0",
+    "@noble/curves": "^2.4.0",
+    "@noble/hashes": "^2.4.0"
+  },
+  "devDependencies": {
+    "@plataforma/canal-memoria": "*"
+  }
+}

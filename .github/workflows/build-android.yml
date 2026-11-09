@@ -1,0 +1,74 @@
+name: build-android
+
+# A cada tag v*, gera o APK assinado com a keystore dos secrets e publica na
+# release; o workflow "pages" então coloca o APK na página.
+#
+# Secrets: ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_SENHA,
+#          ANDROID_CHAVE_APELIDO, ANDROID_CHAVE_SENHA
+# A keystore nunca muda, para as atualizações instalarem por cima.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - name: Versão
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            echo "VERSAO_APP=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          else
+            echo "VERSAO_APP=0.0.0-${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+          fi
+          echo "CODIGO_VERSAO=$((GITHUB_RUN_NUMBER + 100))" >> "$GITHUB_ENV"
+      - run: npm run build -w cliente-web
+      - run: npx cap sync android
+        working-directory: cliente-web
+      - name: Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "KEYSTORE_ARQUIVO=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+            echo "TAREFA=assembleRelease" >> "$GITHUB_ENV"
+          else
+            echo "::warning::Sem keystore nos secrets: gerando um APK de depuração (instala, mas não atualiza um APK assinado)."
+            echo "TAREFA=assembleDebug" >> "$GITHUB_ENV"
+          fi
+      - name: Gradle
+        working-directory: cliente-android
+        env:
+          KEYSTORE_SENHA: ${{ secrets.ANDROID_KEYSTORE_SENHA }}
+          CHAVE_APELIDO: ${{ secrets.ANDROID_CHAVE_APELIDO }}
+          CHAVE_SENHA: ${{ secrets.ANDROID_CHAVE_SENHA }}
+        run: ./gradlew "$TAREFA" --no-daemon
+      - name: Nome final
+        run: cp "$(find cliente-android/app/build/outputs/apk -name '*.apk' | head -n 1)" comunicacao-offline.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: comunicacao-offline.apk
+      - name: Publicar na release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes
+          gh release upload "$GITHUB_REF_NAME" comunicacao-offline.apk --clobber

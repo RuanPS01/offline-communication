@@ -1,0 +1,16 @@
+{
+  "name": "@plataforma/canal-qr",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Canal QR: pacotes exibidos na tela e lidos pela câmera do outro celular.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@plataforma/nucleo": "*",
+    "jsqr": "^1.4.0",
+    "qrcode-generator": "^2.0.4"
+  }
+}

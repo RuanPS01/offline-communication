@@ -1,0 +1,281 @@
+:root {
+  --fundo: #0e1a1b;
+  --superficie: #16292a;
+  --borda: #2c4a4b;
+  --texto: #eef5f2;
+  --suave: #9fb8b3;
+  --acento: #f2c14e;
+  --acento-texto: #1b1400;
+  --verde: #5fd3bc;
+  color-scheme: dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --fundo: #f4f7f5;
+    --superficie: #ffffff;
+    --borda: #cfdcd7;
+    --texto: #10201f;
+    --suave: #4f6662;
+    --acento: #c98a00;
+    --acento-texto: #ffffff;
+    --verde: #11806b;
+    color-scheme: light;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+.topo,
+main,
+footer {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.topo {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding-top: 32px;
+}
+
+.topo img {
+  border-radius: 16px;
+  flex: none;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+}
+
+h2 {
+  margin: 40px 0 8px;
+}
+
+h3 {
+  margin: 0 0 8px;
+}
+
+.topo p {
+  margin: 4px 0 0;
+  color: var(--suave);
+}
+
+.suave {
+  color: var(--suave);
+}
+
+.pequeno {
+  font-size: 0.875rem;
+}
+
+.opcoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.opcao {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.opcao.recomendada {
+  border: 2px solid var(--acento);
+}
+
+.opcao.recomendada h3::after {
+  content: ' (recomendado)';
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--acento);
+}
+
+.opcao p {
+  margin: 0 0 8px;
+}
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--borda);
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  margin-top: auto;
+}
+
+.botao.primario {
+  background: var(--acento);
+  color: var(--acento-texto);
+  border-color: transparent;
+}
+
+.botao.desabilitado {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.instrucoes-ios {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.instrucoes-ios .botao {
+  width: 100%;
+}
+
+.tabela-rolagem {
+  overflow-x: auto;
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 560px;
+  background: var(--superficie);
+}
+
+th,
+td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--borda);
+  vertical-align: top;
+}
+
+thead th {
+  font-size: 0.85rem;
+  color: var(--suave);
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.linha {
+  display: flex;
+  gap: 8px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--borda);
+  background: var(--fundo);
+  color: var(--texto);
+  font: inherit;
+}
+
+button.endereco {
+  background: none;
+  border: none;
+  color: var(--acento);
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+code {
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: 4px;
+  padding: 0 4px;
+  overflow-wrap: anywhere;
+}
+
+.compartilhar {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 24px;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.qr {
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px;
+  width: 200px;
+}
+
+.qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.aviso {
+  border: 1px solid var(--verde);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+footer {
+  padding-top: 32px;
+  padding-bottom: 48px;
+}
+
+a {
+  color: var(--verde);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--acento);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .compartilhar {
+    grid-template-columns: 1fr;
+  }
+
+  .qr {
+    margin: 0 auto;
+  }
+}

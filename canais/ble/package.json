@@ -1,0 +1,24 @@
+{
+  "name": "@plataforma/canal-ble",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Canal BLE: transporte principal e malha. GATT próprio, igual no Android e no iOS (ponte entre os dois).",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "capacitor": {
+    "android": {
+      "src": "android"
+    },
+    "ios": {
+      "src": "ios"
+    }
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.6.0",
+    "@plataforma/canal-nativo": "*",
+    "@plataforma/nucleo": "*"
+  }
+}

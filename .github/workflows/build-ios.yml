@@ -1,0 +1,140 @@
+name: build-ios
+
+# Gera o IPA ad hoc (instalável só nos iPhones cadastrados). Roda a cada tag
+# v* e quando um UDID novo é cadastrado (o Worker dispara repository_dispatch
+# "udid-cadastrado"), para o perfil ad hoc incluir o aparelho novo.
+#
+# Secrets: IOS_CERTIFICADO_P12_BASE64, IOS_CERTIFICADO_SENHA (certificado
+#          Apple Distribution), IOS_EQUIPE_ID, ASC_ID_CHAVE, ASC_ID_EMISSOR,
+#          ASC_CHAVE_P8 (App Store Connect API).
+# Sem os secrets, só compila para o simulador (valida o código Swift).
+
+on:
+  push:
+    tags: ['v*']
+  repository_dispatch:
+    types: [udid-cadastrado]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-ios
+  cancel-in-progress: false
+
+jobs:
+  ipa:
+    runs-on: macos-15
+    env:
+      IOS_CERTIFICADO_P12_BASE64: ${{ secrets.IOS_CERTIFICADO_P12_BASE64 }}
+      IOS_CERTIFICADO_SENHA: ${{ secrets.IOS_CERTIFICADO_SENHA }}
+      IOS_EQUIPE_ID: ${{ secrets.IOS_EQUIPE_ID }}
+      ASC_ID_CHAVE: ${{ secrets.ASC_ID_CHAVE }}
+      ASC_ID_EMISSOR: ${{ secrets.ASC_ID_EMISSOR }}
+      ASC_CHAVE_P8: ${{ secrets.ASC_CHAVE_P8 }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Versão
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            echo "VERSAO_APP=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          else
+            echo "VERSAO_APP=$(node -p "require('./package.json').version")" >> "$GITHUB_ENV"
+          fi
+          echo "CODIGO_VERSAO=$((GITHUB_RUN_NUMBER + 100))" >> "$GITHUB_ENV"
+      - run: npm run build -w cliente-web
+      - run: npx cap sync ios
+        working-directory: cliente-web
+
+      - name: Tem como assinar?
+        id: segredos
+        run: |
+          if [ -n "$IOS_CERTIFICADO_P12_BASE64" ] && [ -n "$ASC_CHAVE_P8" ] && [ -n "$IOS_EQUIPE_ID" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Sem certificado ou chave da App Store Connect: compilando só para o simulador."
+          fi
+
+      - name: Compilar para o simulador
+        if: steps.segredos.outputs.ok != 'true'
+        run: |
+          xcodebuild -project cliente-ios/App/App.xcodeproj -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build | tail -n 50
+          exit ${PIPESTATUS[0]}
+
+      - name: Certificado num chaveiro temporário
+        if: steps.segredos.outputs.ok == 'true'
+        run: |
+          CHAVEIRO="$RUNNER_TEMP/assinatura.keychain-db"
+          SENHA_CHAVEIRO="$(uuidgen)"
+          security create-keychain -p "$SENHA_CHAVEIRO" "$CHAVEIRO"
+          security set-keychain-settings -lut 21600 "$CHAVEIRO"
+          security unlock-keychain -p "$SENHA_CHAVEIRO" "$CHAVEIRO"
+          echo "$IOS_CERTIFICADO_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/certificado.p12"
+          security import "$RUNNER_TEMP/certificado.p12" -P "$IOS_CERTIFICADO_SENHA" -A -t cert -f pkcs12 -k "$CHAVEIRO"
+          security set-key-partition-list -S apple-tool:,apple: -k "$SENHA_CHAVEIRO" "$CHAVEIRO"
+          security list-keychains -d user -s "$CHAVEIRO" $(security list-keychains -d user | tr -d '"')
+          printf '%s' "$ASC_CHAVE_P8" > "$RUNNER_TEMP/AuthKey.p8"
+
+      - name: Arquivar e exportar (ad hoc)
+        if: steps.segredos.outputs.ok == 'true'
+        run: |
+          AUTENTICACAO=(-allowProvisioningUpdates
+            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8"
+            -authenticationKeyID "$ASC_ID_CHAVE"
+            -authenticationKeyIssuerID "$ASC_ID_EMISSOR")
+          xcodebuild -project cliente-ios/App/App.xcodeproj -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/App.xcarchive" archive \
+            "${AUTENTICACAO[@]}" \
+            DEVELOPMENT_TEAM="$IOS_EQUIPE_ID" CODE_SIGN_STYLE=Automatic \
+            MARKETING_VERSION="$VERSAO_APP" CURRENT_PROJECT_VERSION="$CODIGO_VERSAO"
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>release-testing</string>
+            <key>teamID</key><string>$IOS_EQUIPE_ID</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>thinning</key><string>&lt;none&gt;</string>
+          </dict>
+          </plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportPath "$RUNNER_TEMP/saida" -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            "${AUTENTICACAO[@]}"
+          cp "$(find "$RUNNER_TEMP/saida" -name '*.ipa' | head -n 1)" comunicacao-offline.ipa
+
+      - uses: actions/upload-artifact@v4
+        if: steps.segredos.outputs.ok == 'true'
+        with:
+          name: ipa
+          path: comunicacao-offline.ipa
+
+      - name: Publicar na release
+        if: steps.segredos.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            TAG="$GITHUB_REF_NAME"
+          else
+            TAG="$(gh release list --limit 1 --json tagName -q '.[0].tagName' || true)"
+          fi
+          if [ -z "$TAG" ]; then TAG="ios-adhoc"; fi
+          gh release view "$TAG" > /dev/null 2>&1 || gh release create "$TAG" --title "$TAG" --notes "Build ad hoc do iOS."
+          gh release upload "$TAG" comunicacao-offline.ipa --clobber
+
+      - name: Limpar o chaveiro
+        if: always()
+        run: |
+          security delete-keychain "$RUNNER_TEMP/assinatura.keychain-db" 2> /dev/null || true
+          rm -f "$RUNNER_TEMP/certificado.p12" "$RUNNER_TEMP/AuthKey.p8"

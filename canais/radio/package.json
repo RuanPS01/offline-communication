@@ -1,0 +1,23 @@
+{
+  "name": "@plataforma/canal-radio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Canal de rádio LoRa: módulo externo (ESP32 + LoRa) ligado por Bluetooth (UART BLE) com quadros KISS. Alcance de quilômetros.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "capacitor": {
+    "android": {
+      "src": "android"
+    },
+    "ios": {
+      "src": "ios"
+    }
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.6.0",
+    "@plataforma/nucleo": "*"
+  }
+}

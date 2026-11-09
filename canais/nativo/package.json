@@ -1,0 +1,20 @@
+{
+  "name": "@plataforma/canal-nativo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Ponte genérica entre o contrato de canal (TypeScript) e plugins nativos do Capacitor (Kotlin e Swift). No iOS também traz o plugin Sistema (modo rádio ligado).",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.6.0",
+    "@plataforma/nucleo": "*"
+  },
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    }
+  }
+}

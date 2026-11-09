@@ -1,0 +1,11 @@
+{
+  "name": "servidor-udid",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Endpoint de cadastro de iPhones para a distribuição ad hoc (Cloudflare Worker gratuito).",
+  "scripts": {
+    "dev": "npx wrangler@4 dev",
+    "deploy": "npx wrangler@4 deploy"
+  }
+}

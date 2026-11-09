@@ -1,0 +1,15 @@
+{
+  "name": "@plataforma/canal-som",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Canal de som: dados por áudio com ggwave (audível ou ultrassom). Funciona na web.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@plataforma/nucleo": "*",
+    "ggwave": "0.4.0"
+  }
+}

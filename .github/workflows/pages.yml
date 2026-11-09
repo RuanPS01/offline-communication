@@ -1,0 +1,68 @@
+name: pages
+
+# Monta e publica a página central: detecção do aparelho, a PWA em /app/,
+# o APK e o IPA da última release, e as estratégias de rede local.
+# Roda ao fim dos builds e a cada push na main.
+#
+# Variáveis do repositório (Settings, Variables): URL_CADASTRO_UDID com o
+# endereço do Worker de cadastro de iPhones.
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: [build-android, build-ios]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - id: pages
+        uses: actions/configure-pages@v5
+      - name: Última release (APK e IPA)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p downloads
+          TAG="$(gh release list --limit 1 --json tagName -q '.[0].tagName' || true)"
+          if [ -n "$TAG" ]; then
+            gh release download "$TAG" --pattern 'comunicacao-offline.*' --dir downloads || true
+            echo "VERSAO_APP=${TAG#v}" >> "$GITHUB_ENV"
+          fi
+          ls -la downloads
+      - run: npm run build -w cliente-web
+      - run: npm run build -w site
+        env:
+          URL_SITE: ${{ steps.pages.outputs.base_url }}/
+          PASTA_DOWNLOADS: ${{ github.workspace }}/downloads
+          URL_CADASTRO_UDID: ${{ vars.URL_CADASTRO_UDID }}
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site/dist
+
+  publicar:
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publicacao.outputs.page_url }}
+    steps:
+      - id: publicacao
+        uses: actions/deploy-pages@v4
