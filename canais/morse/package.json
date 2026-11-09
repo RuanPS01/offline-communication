@@ -1,0 +1,22 @@
+{
+  "name": "@plataforma/canal-morse",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Canais Morse: por luz (lanterna e câmera) e por som (tom e microfone). Interoperam com gente piscando uma lanterna à mão.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "capacitor": {
+    "android": {
+      "src": "android"
+    },
+    "ios": {
+      "src": "ios"
+    }
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.6.0",
+    "@plataforma/nucleo": "*"
+  }
+}
