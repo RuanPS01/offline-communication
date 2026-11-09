@@ -8,7 +8,8 @@
     "nucleo",
     "midia",
     "canais/*",
-    "cliente-web"
+    "cliente-web",
+    "site"
   ],
   "scripts": {
     "test": "vitest run",

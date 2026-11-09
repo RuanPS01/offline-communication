@@ -1,0 +1,13 @@
+{
+  "name": "site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Página central no GitHub Pages: detecta o aparelho e mostra o caminho certo (PWA, APK ou iOS ad hoc).",
+  "scripts": {
+    "build": "node --experimental-transform-types --no-warnings construir.ts"
+  },
+  "dependencies": {
+    "@plataforma/canal-qr": "*"
+  }
+}
