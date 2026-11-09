@@ -1,0 +1,23 @@
+{
+  "name": "@plataforma/canal-wifi",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Canal Wi-Fi P2P: Nearby Connections no Android e Multipeer no iOS. Voz e dados em volume.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "capacitor": {
+    "android": {
+      "src": "android"
+    },
+    "ios": {
+      "src": "ios"
+    }
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.6.0",
+    "@plataforma/canal-nativo": "*",
+    "@plataforma/nucleo": "*"
+  }
+}
