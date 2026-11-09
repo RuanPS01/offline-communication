@@ -561,6 +561,11 @@ export class Nucleo {
     return this.enviarProprio(p, { modo: 'difusao', ignorarLentos: true, validadeMs: VALIDADE_PROPRIA_CANAL });
   }
 
+  /** Pacote de presença pronto, para canais que anunciam sob demanda (som, QR, NFC). */
+  pacotePresenca(): Uint8Array {
+    return this.montarPresenca();
+  }
+
   /** Força uma nova divulgação de presença em todos os canais. */
   anunciarPresenca(): void {
     if (!this.iniciado) return;
@@ -627,6 +632,14 @@ export class Nucleo {
     this.proprias.set(chave, propria);
     await this.enviarPor(canais, pacote, bytes);
     this.marcarEntreguesNaFila(chave, canais);
+    // Num meio único confiável (servidor de rede local), ninguém repete no
+    // mesmo canal, então não há eco: entregar com gente conectada já conta
+    // como ouvida.
+    const meioUnicoComGente = canais.some((id) => {
+      const reg = this.canais.get(id);
+      return reg?.ativo && reg.canal.capacidades.meioUnico && reg.vizinhos.size > 0;
+    });
+    if (meioUnicoComGente && !(pacote.flags & FLAG.ALVO_NO)) propria.estado = 'ouvida';
     this.emitirEstado(propria);
     this.agendarEscalonamento(propria);
     return this.estadoDe(propria);

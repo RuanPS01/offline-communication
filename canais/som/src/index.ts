@@ -28,6 +28,15 @@ export const OPCOES_SOM_PADRAO: OpcoesSom = {
   intervaloPresencaMs: 120_000,
 };
 
+/** Navegadores só liberam o áudio depois de um gesto do usuário. */
+async function retomarAudio(ctx: AudioContext): Promise<void> {
+  await Promise.race([ctx.resume(), new Promise((r) => setTimeout(r, 1500))]);
+  if (ctx.state !== 'running') {
+    await ctx.close().catch(() => undefined);
+    throw new Error('o navegador bloqueou o áudio: toque em "Ligar" para liberar');
+  }
+}
+
 export class CanalSom implements Canal {
   readonly id = 'som';
   readonly nome = 'Som (dados por áudio)';
@@ -76,7 +85,7 @@ export class CanalSom implements Canal {
 
   async iniciar(onPacote: AoReceberPacote, _onVizinho: AoMudarVizinho): Promise<void> {
     this.contexto = new AudioContext();
-    await this.contexto.resume();
+    await retomarAudio(this.contexto);
     this.modem = await ModemSom.criar(this.contexto.sampleRate);
     // Sem cancelamento de eco nem supressão de ruído: eles destroem o sinal FSK.
     this.fluxo = await navigator.mediaDevices.getUserMedia({

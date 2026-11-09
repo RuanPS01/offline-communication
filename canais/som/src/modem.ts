@@ -1,3 +1,4 @@
+/// <reference path="./ggwave.d.ts" />
 /**
  * Modem de dados por som em cima do ggwave (FSK robusta com Reed-Solomon).
  * Isolado do Web Audio para poder ser testado em Node.

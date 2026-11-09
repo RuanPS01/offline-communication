@@ -21,6 +21,15 @@ export function energiaNormalizada(amplitude: number): number {
   return Math.max(0, Math.min(1, (20 * Math.log10(amplitude + 1e-6) + 80) / 80));
 }
 
+/** Navegadores só liberam o áudio depois de um gesto do usuário. */
+async function retomarAudio(ctx: AudioContext): Promise<void> {
+  await Promise.race([ctx.resume(), new Promise((r) => setTimeout(r, 1500))]);
+  if (ctx.state !== 'running') {
+    await ctx.close().catch(() => undefined);
+    throw new Error('o navegador bloqueou o áudio: toque em "Ligar" para liberar');
+  }
+}
+
 export class CanalSomMorse implements Canal {
   readonly id = 'som-morse';
   readonly nome = 'Som Morse (tom)';
@@ -65,7 +74,7 @@ export class CanalSomMorse implements Canal {
 
   async iniciar(onPacote: AoReceberPacote, _onVizinho: AoMudarVizinho): Promise<void> {
     this.contexto = new AudioContext();
-    await this.contexto.resume();
+    await retomarAudio(this.contexto);
     this.processador = new ProcessadorMorse(
       this.unidadeMs,
       (texto) => onPacote(utf8(texto), 'microfone'),

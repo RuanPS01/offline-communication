@@ -1,0 +1,41 @@
+{
+  "name": "cliente-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "PWA: o piso que alcança qualquer celular. É também a interface dos apps Android e iOS.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json --threshold error",
+    "icones": "node scripts/gerar-icones.mjs",
+    "cap:sync:android": "cap sync android",
+    "cap:sync:ios": "cap sync ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/ios": "^8.6.0",
+    "@plataforma/canal-ble": "*",
+    "@plataforma/canal-morse": "*",
+    "@plataforma/canal-nativo": "*",
+    "@plataforma/canal-nfc": "*",
+    "@plataforma/canal-qr": "*",
+    "@plataforma/canal-radio": "*",
+    "@plataforma/canal-rede-local": "*",
+    "@plataforma/canal-som": "*",
+    "@plataforma/canal-wifi": "*",
+    "@plataforma/midia": "*",
+    "@plataforma/nucleo": "*",
+    "maplibre-gl": "^6.17.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.0",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "svelte": "^5.57.0",
+    "svelte-check": "^4.3.0",
+    "vite": "^8.1.0",
+    "vite-plugin-pwa": "^2.0.0"
+  }
+}
