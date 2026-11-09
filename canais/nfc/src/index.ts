@@ -27,11 +27,24 @@ export const CAPACIDADES_NFC: Capacidades = {
   exigeAcao: true,
 };
 
-const PluginNfc = registerPlugin<PluginCanalNativo>('CanalNfc');
+interface PluginNfcNativo extends PluginCanalNativo {
+  /** Vira leitor por alguns segundos e troca pacotes com o celular encostado. */
+  ler(o: { segundos?: number }): Promise<{ trocou: boolean; recebidos?: number }>;
+}
+
+const PluginNfc = registerPlugin<PluginNfcNativo>('CanalNfc');
 
 export class CanalNfcNativo extends CanalNativo {
   constructor(opcoesIniciar?: () => Record<string, unknown>) {
     super('nfc', 'NFC (toque)', CAPACIDADES_NFC, PluginNfc, 'CanalNfc', opcoesIniciar);
+  }
+
+  /**
+   * Por padrão o aparelho fica como "cartão" (o outro lê). Chamando `ler`, ele
+   * vira leitor: encostando os dois, a troca acontece nos dois sentidos.
+   */
+  ler(segundos = 20): Promise<{ trocou: boolean; recebidos?: number }> {
+    return (this.plugin as PluginNfcNativo).ler({ segundos });
   }
 }
 

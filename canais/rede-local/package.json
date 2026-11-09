@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Canal de rede local: um celular serve (HTTP + WebSocket + mDNS), os outros abrem a página dele.",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "bin": {
     "servidor-rede-local": "./servidor/servidor.mjs"

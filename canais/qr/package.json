@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Canal QR: pacotes exibidos na tela e lidos pela câmera do outro celular.",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@plataforma/nucleo": "*",

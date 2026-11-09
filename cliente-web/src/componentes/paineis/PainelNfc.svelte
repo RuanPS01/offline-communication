@@ -2,7 +2,22 @@
   import { app } from '../../lib/estado.svelte.ts';
 
   const web = app.canaisCliente!.nfcWeb;
+  const nativo = app.canaisCliente!.nfcNativo;
   let gravando = $state(false);
+  let lendo = $state(false);
+
+  async function ler(): Promise<void> {
+    if (!nativo) return;
+    lendo = true;
+    try {
+      const r = await nativo.ler(20);
+      app.avisar(r.trocou ? `Troca feita: ${r.recebidos ?? 0} pacotes recebidos.` : 'Nenhum celular encostou.');
+    } catch (e) {
+      app.avisar(`NFC: ${e instanceof Error ? e.message : e}`, 'erro');
+    } finally {
+      lendo = false;
+    }
+  }
 
   async function gravar(): Promise<void> {
     if (!web) return;
@@ -29,8 +44,11 @@
     <button class="primario" onclick={gravar} disabled={gravando}>{gravando ? 'Encoste o adesivo...' : 'Gravar no adesivo'}</button>
   </div>
 {:else}
-  <p class="suave pequeno">
-    Encoste as costas dos dois celulares: eles trocam presença e as mensagens guardadas. No iPhone, abra esta tela
-    e toque no aviso de leitura antes de encostar num Android.
-  </p>
+  <div class="pilha">
+    <p class="suave pequeno">
+      Um dos dois toca em "Ler" e os celulares encostam as costas: trocam presença e as mensagens guardadas. O outro
+      não precisa fazer nada (ele responde como cartão). No iPhone, "Ler" funciona só com um Android do outro lado.
+    </p>
+    <button class="primario" onclick={ler} disabled={lendo}>{lendo ? 'Encoste o outro celular...' : 'Ler'}</button>
+  </div>
 {/if}

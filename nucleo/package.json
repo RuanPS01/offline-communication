@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Núcleo compartilhado: protocolo, malha, presença, cripto, fila e roteamento entre canais.",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@noble/ciphers": "^2.4.0",

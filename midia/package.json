@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Camada de mídia: voz meio-duplex com apertar para falar, codecs e buffer de reprodução.",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@plataforma/nucleo": "*"

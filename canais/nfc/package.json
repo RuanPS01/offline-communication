@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Canal NFC: aperto de mão no toque (HCE no Android, leitura no iPhone) e adesivos NFC como caixa de recados na web.",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "capacitor": {
     "android": {

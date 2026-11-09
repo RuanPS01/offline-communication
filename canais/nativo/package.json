@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Ponte genérica entre o contrato de canal (TypeScript) e plugins nativos do Capacitor (Kotlin e Swift).",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@capacitor/core": "^8.6.0",

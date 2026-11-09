@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Canal de som: dados por áudio com ggwave (audível ou ultrassom). Funciona na web.",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@plataforma/nucleo": "*",

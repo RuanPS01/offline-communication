@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Canal Wi-Fi P2P: Nearby Connections no Android e Multipeer no iOS. Voz e dados em volume.",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "capacitor": {
     "android": {
