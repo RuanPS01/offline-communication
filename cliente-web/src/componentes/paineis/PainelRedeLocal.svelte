@@ -1,6 +1,11 @@
 <script lang="ts">
   import { qrSvg } from '@plataforma/canal-qr';
-  import { ENDERECOS_HOTSPOT, type ServidorEncontrado } from '@plataforma/canal-rede-local';
+  import {
+    consultarServidor,
+    ENDERECOS_HOTSPOT,
+    type ServidorEncontrado,
+    urlWebSocket,
+  } from '@plataforma/canal-rede-local';
   import { onDestroy } from 'svelte';
   import { app } from '../../lib/estado.svelte.ts';
 
@@ -54,7 +59,10 @@
   async function entrar(s: ServidorEncontrado): Promise<void> {
     if (!nativo) return;
     if (!app.canais.find((c) => c.id === 'rede-local')?.ativo) await app.alternarCanal('rede-local', true);
-    await nativo.rede.conectar({ url: `ws://${s.host}:${s.porta}/ws` });
+    // O servidor diz onde fica o WebSocket (no iPhone é a porta seguinte à da página).
+    const base = `http://${s.host.includes(':') ? `[${s.host}]` : s.host}:${s.porta}/`;
+    const info = await consultarServidor(base);
+    await nativo.rede.conectar({ url: urlWebSocket(base, info ?? {}) });
     app.avisar(`Conectado a ${s.nome}`);
   }
 </script>
