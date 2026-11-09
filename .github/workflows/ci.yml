@@ -1,0 +1,75 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testes:
+    name: Núcleo, canais, PWA e ponta a ponta
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Tipos (TypeScript e Svelte)
+        run: npm run typecheck
+      - name: Testes de unidade e integração
+        run: npm test
+      - name: Build da PWA e da página central
+        run: npm run build
+      - name: Navegador para os testes de ponta a ponta
+        run: |
+          npm install --no-save playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Ponta a ponta (rede local, som e QR no Chromium)
+        run: npm run e2e
+
+  android:
+    name: Compila o app Android
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run build -w cliente-web
+      - run: npx cap sync android
+        working-directory: cliente-web
+      - run: ./gradlew assembleDebug --no-daemon
+        working-directory: cliente-android
+
+  ios:
+    name: Compila o app iOS (simulador, sem assinatura)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build -w cliente-web
+      - run: npx cap sync ios
+        working-directory: cliente-web
+      - name: xcodebuild
+        run: |
+          xcodebuild -project cliente-ios/App/App.xcodeproj -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build | tail -n 50
+          exit ${PIPESTATUS[0]}
