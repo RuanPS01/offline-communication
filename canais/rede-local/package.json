@@ -1,0 +1,30 @@
+{
+  "name": "@plataforma/canal-rede-local",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Canal de rede local: um celular serve (HTTP + WebSocket + mDNS), os outros abrem a página dele.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "bin": {
+    "servidor-rede-local": "./servidor/servidor.mjs"
+  },
+  "capacitor": {
+    "android": {
+      "src": "android"
+    },
+    "ios": {
+      "src": "ios"
+    }
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.6.0",
+    "@plataforma/canal-nativo": "*",
+    "@plataforma/nucleo": "*",
+    "ws": "^8.18.0"
+  },
+  "optionalDependencies": {
+    "bonjour-service": "^1.3.0"
+  }
+}
