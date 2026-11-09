@@ -1,0 +1,13 @@
+{
+  "name": "@plataforma/canal-memoria",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Canal de teste: um meio simulado em memória, com topologia e perda configuráveis.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@plataforma/nucleo": "*"
+  }
+}

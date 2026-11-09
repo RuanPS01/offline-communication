@@ -1,0 +1,31 @@
+{
+  "name": "plataforma-comunicacao-offline",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Plataforma de comunicação próxima sem internet: um núcleo, muitos canais.",
+  "workspaces": [
+    "nucleo",
+    "canais/*"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit && npm run check -w cliente-web",
+    "dev": "npm run dev -w cliente-web",
+    "build": "npm run build -w cliente-web && npm run build -w site",
+    "servidor-local": "node canais/rede-local/servidor/servidor.mjs --pasta cliente-web/dist",
+    "e2e": "node testes-e2e/executar.mjs",
+    "android:sync": "npm run build -w cliente-web && npm run cap:sync:android -w cliente-web",
+    "ios:sync": "npm run build -w cliente-web && npm run cap:sync:ios -w cliente-web"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/ws": "^8.5.13",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
