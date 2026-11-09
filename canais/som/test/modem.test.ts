@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { ModemSom } from '../src/modem.ts';
+import { ModemSom, ReamostradorContinuo } from '../src/modem.ts';
 
 function demodularEmBlocos(modem: ModemSom, onda: Float32Array): Uint8Array | undefined {
   const bloco = 1024;
@@ -48,5 +48,25 @@ describe('modem de som (ggwave)', () => {
 
   it('recusa o que não cabe numa transmissão', async () => {
     expect(() => tx.modular(new Uint8Array(141), 'audivel', 'rapido')).toThrow();
+  });
+});
+
+describe('microfone em outra taxa', () => {
+  it.each([44100, 16000, 22050, 96000])('decodifica capturando a %i Hz em blocos irregulares', async (taxa) => {
+    const tx = await ModemSom.criar(48000);
+    const rx = await ModemSom.criar(taxa);
+    const dados = Uint8Array.from({ length: 90 }, (_, i) => (i * 11) & 0xff);
+    // Simula o caminho do ar: onda a 48 kHz, captada pelo microfone na taxa dele.
+    const noAr = new ReamostradorContinuo(48000, taxa).processar(tx.modular(dados, 'audivel', 'rapido'));
+    const comSilencio = new Float32Array(noAr.length + taxa * 2);
+    comSilencio.set(noAr, Math.round(taxa * 0.3));
+    let r: Uint8Array | undefined;
+    for (let i = 0, n = 0; i < comSilencio.length && !r; i += n) {
+      n = 300 + ((i / 7) % 900) | 0;
+      r = rx.demodular(comSilencio.subarray(i, i + n));
+    }
+    tx.liberar();
+    rx.liberar();
+    expect(r).toEqual(dados);
   });
 });

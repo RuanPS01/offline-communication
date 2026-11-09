@@ -6,7 +6,7 @@
  */
 
 import type { AoMudarVizinho, AoReceberPacote, Canal, Capacidades } from '@plataforma/nucleo';
-import { ModemSom, MTU_SOM, type ProtocoloSom, type VelocidadeSom } from './modem.ts';
+import { ModemSom, MTU_SOM, type ProtocoloSom, TAXA_GGWAVE, type VelocidadeSom } from './modem.ts';
 
 export * from './modem.ts';
 
@@ -146,7 +146,8 @@ export class CanalSom implements Canal {
 
   private tocar(onda: Float32Array): Promise<void> {
     const ctx = this.contexto!;
-    const buffer = ctx.createBuffer(1, onda.length, ctx.sampleRate);
+    // A onda vem a 48 kHz; o AudioContext converte para a taxa do alto-falante.
+    const buffer = ctx.createBuffer(1, onda.length, TAXA_GGWAVE);
     buffer.copyToChannel(new Float32Array(onda), 0);
     const fonte = ctx.createBufferSource();
     fonte.buffer = buffer;

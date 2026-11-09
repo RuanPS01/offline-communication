@@ -17,7 +17,7 @@
     "dev": "npm run dev -w cliente-web",
     "build": "npm run build -w cliente-web && npm run build -w site",
     "servidor-local": "node canais/rede-local/servidor/servidor.mjs --pasta cliente-web/dist",
-    "e2e": "node testes-e2e/executar.mjs",
+    "e2e": "node testes-e2e/executar.mjs && node --experimental-transform-types --no-warnings testes-e2e/som-e-qr.ts",
     "android:sync": "npm run build -w cliente-web && npm run cap:sync:android -w cliente-web",
     "ios:sync": "npm run build -w cliente-web && npm run cap:sync:ios -w cliente-web"
   },
@@ -29,5 +29,6 @@
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "packageManager": "npm@11.6.2"
 }
