@@ -1,0 +1,16 @@
+{
+  "name": "@plataforma/midia",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Camada de mídia: voz meio-duplex com apertar para falar, codecs e buffer de reprodução.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@plataforma/nucleo": "*"
+  },
+  "devDependencies": {
+    "@plataforma/canal-memoria": "*"
+  }
+}

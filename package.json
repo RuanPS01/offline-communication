@@ -6,6 +6,7 @@
   "description": "Plataforma de comunicação próxima sem internet: um núcleo, muitos canais.",
   "workspaces": [
     "nucleo",
+    "midia",
     "canais/*"
   ],
   "scripts": {
